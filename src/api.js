@@ -1,5 +1,4 @@
 const Hapi = require('hapi');
-const Joi = require('joi');
 
 const Swagger = require('hapi-swagger');
 const Vision = require('vision');
@@ -10,34 +9,79 @@ const Auth = require('hapi-auth-jwt2');
 const app = new Hapi.Server({ port: 3000 });
 
 const MOCK_ITEMS = [
-    { title: 'primeiro', tag: 'node' },
-    { title: 'segundo', tag: 'mocha' },
-    { title: 'terceiro', tag: 'node' },
-    { title: 'quarto', tag: 'mocha' }
+    { id: 1, title: 'primeiro', tag: 'node' },
+    { id: 2, title: 'segundo', tag: 'mocha' },
+    { id: 3, title: 'terceiro', tag: 'node' },
+    { id: 4, title: 'quarto', tag: 'mocha' }
 ];
 
 async function Api() {
     app.route({
         method: 'GET',
         path: '/tools',
-        config: {
-            validate: {
-                query: {
-                    tag: Joi.string().min(3).max(30)
-                }
-            }
-        },
         handler: (request, response) => {
+            try {
+                const consulta = request.query.tag ? MOCK_ITEMS.filter(result => result.tag == request.query.tag) : MOCK_ITEMS;
+                return consulta;
+            } catch (error) {
+                console.error('DEU RUIM', error)
+                return;
+            }
+        }
+    });
+    app.route({
+        method: 'GET',
+        path: '/tools/{id}',
+        handler: (request, response) => {
+            try {
+                const consulta = MOCK_ITEMS.filter(result => result.id == request.params.id);
+                return consulta;
+            } catch (error) {
+                console.error('DEU RUIM', error);
+                return;
+            }
+        }
+    });
+    app.route({
+        method: 'POST',
+        path: '/tools',
+        handler: (request, response) => {
+            try {
+                let insertion = [];
+                const data = request.payload;
+                insertion.push(data);
+                return insertion;
 
-            const consulta = request.query.tag ? MOCK_ITEMS.filter(tag => tag.tag == request.query.tag) : MOCK_ITEMS;
-            return consulta;
+            } catch (error) {
+                console.error('DEU RUIM', error);
+                return;
+            }
+        }
+    });
+    app.route({
+        method: 'PATCH',
+        path: '/tools/{id}',
+        handler: (request, response) => {
+            try {
+                const consulta = MOCK_ITEMS.filter(result => result.id == request.params.id);
+                
+                var keys = [];
+                for (let k in request.payload) consulta.k = request.payload;
+
+                console.log('consultaChange', consulta)
+                return MOCK_ITEMS;
+
+            } catch (error) {
+                console.error('DEU RUIM', error);
+                return;
+            }
         }
     });
 
     await app.start();
     console.log(`Tô na porta ${app.info.port}`)
-    process.on('unhandledRejection', (err) => {
-        console.log(err);
+    process.on('unhandledRejection', (error) => {
+        console.log('FAIL', error);
         process.exit(1);
     });
     return app;
