@@ -46,17 +46,17 @@ describe('Test suit of all tools', function () {
         const [{id}] = JSON.parse(result.payload);
         assert.deepStrictEqual(id, MOCK_ITEM_DEFAULT.id);
     });
-    // it('Update a tool', async () => {
-    //     const newItem = { title: 'novoPrimeiro' }
-    //     const result = await app.inject({
-    //         method: 'PATCH',
-    //         url: `/tools/${MOCK_ITEM_DEFAULT.id}`,
-    //         payload: JSON.stringify(newItem)
-    //     });
+    it('Update a tool', async () => {
+        const newItem = { title: 'novoPrimeiro' }
+        const result = await app.inject({
+            method: 'PATCH',
+            url: `/tools/${MOCK_ITEM_DEFAULT.id}`,
+            payload: JSON.stringify(newItem)
+        });
 
-    //     const dados = JSON.parse(result.payload);
-    //     assert.deepStrictEqual(dados, MOCK_ITEM_DEFAULT);
-    // });
+        const dados = JSON.parse(result.payload);
+        assert.deepStrictEqual(dados, MOCK_ITEM_DEFAULT.id);
+    });
     it('Delete tool', async () => {
         const result = await app.inject({
             method: 'DELETE',

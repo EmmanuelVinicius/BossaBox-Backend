@@ -58,25 +58,23 @@ async function Api() {
             }
         }
     });
-    // app.route({
-    //     method: 'PATCH',
-    //     path: '/tools/{id}',
-    //     handler: (request, response) => {
-    //         try {
-    //             const consulta = MOCK_ITEMS.filter(result => result.id == request.params.id);
-                
-    //             var keys = [];
-    //             for (let k in request.payload) consulta.k = request.payload;
+    app.route({
+        method: 'PATCH',
+        path: '/tools/{id}',
+        handler: (request, response) => {
+            try {
+                const [consulta] = MOCK_ITEMS.filter(result => result.id == request.params.id);
+                for (let key in request.payload)
+                    consulta[key] = request.payload[key];
 
-    //             console.log('consultaChange', consulta)
-    //             return MOCK_ITEMS;
+                return consulta.id;
 
-    //         } catch (error) {
-    //             console.error('DEU RUIM', error);
-    //             return;
-    //         }
-    //     }
-    // });
+            } catch (error) {
+                console.error('DEU RUIM', error);
+                return;
+            }
+        }
+    });
 
     app.route({
         method: 'DELETE',
