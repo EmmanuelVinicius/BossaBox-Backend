@@ -58,25 +58,42 @@ async function Api() {
             }
         }
     });
+    // app.route({
+    //     method: 'PATCH',
+    //     path: '/tools/{id}',
+    //     handler: (request, response) => {
+    //         try {
+    //             const consulta = MOCK_ITEMS.filter(result => result.id == request.params.id);
+                
+    //             var keys = [];
+    //             for (let k in request.payload) consulta.k = request.payload;
+
+    //             console.log('consultaChange', consulta)
+    //             return MOCK_ITEMS;
+
+    //         } catch (error) {
+    //             console.error('DEU RUIM', error);
+    //             return;
+    //         }
+    //     }
+    // });
+
     app.route({
-        method: 'PATCH',
+        method: 'DELETE',
         path: '/tools/{id}',
         handler: (request, response) => {
             try {
-                const consulta = MOCK_ITEMS.filter(result => result.id == request.params.id);
-                
-                var keys = [];
-                for (let k in request.payload) consulta.k = request.payload;
+                const consulta = (result) => result.id == request.params.id;
+                const index = MOCK_ITEMS.findIndex(consulta);
+                MOCK_ITEMS.splice(index, 1);
 
-                console.log('consultaChange', consulta)
-                return MOCK_ITEMS;
-
+                return JSON.stringify(MOCK_ITEMS.indexOf(consulta));
             } catch (error) {
                 console.error('DEU RUIM', error);
-                return;
+                
             }
         }
-    });
+    })
 
     await app.start();
     console.log(`Tô na porta ${app.info.port}`)
