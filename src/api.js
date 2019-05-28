@@ -50,7 +50,8 @@ async function Api() {
                     limit: Joi.number().integer().default(10),
                     nome: Joi.string().min(3).max(100)
                 },
-            },
+            }
+        },
         handler: (request, response) => {
             try {
                 const consulta = request.query.tag ? MOCK_ITEMS.filter(result => result.tag == request.query.tag) : MOCK_ITEMS;
@@ -120,7 +121,7 @@ async function Api() {
                 return JSON.stringify(MOCK_ITEMS.indexOf(consulta));
             } catch (error) {
                 console.error('DEU RUIM', error);
-                
+
             }
         }
     })
