@@ -16,9 +16,41 @@ const MOCK_ITEMS = [
 ];
 
 async function Api() {
+
+    const swaggerOptions = {
+        info: {
+            title: 'Desafio de entrada BossaBox',
+            version: 'v1.0'
+        },
+        lang: 'pt'
+    };
+
+    await app.register([
+        HapiAuthJwt2,
+        Vision,
+        Inert,
+        {
+            plugin: HapiSwagger,
+            options: swaggerOptions
+        }
+    ]);
+
     app.route({
         method: 'GET',
         path: '/tools',
+        config: {
+            tags: ['api'],
+            description: 'Lista as ferramentas do banco',
+            notes: 'É possível pegar todas ferramentas do banco e filtrar por algum critério',
+            validate: {
+                failAction,
+                headers,
+                query: {
+                    skip: Joi.number().integer().default(0),
+                    limit: Joi.number().integer().default(10),
+                    nome: Joi.string().min(3).max(100)
+                },
+            },
         handler: (request, response) => {
             try {
                 const consulta = request.query.tag ? MOCK_ITEMS.filter(result => result.tag == request.query.tag) : MOCK_ITEMS;
