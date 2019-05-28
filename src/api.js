@@ -3,7 +3,6 @@ const Hapi = require('hapi');
 const Swagger = require('hapi-swagger');
 const Vision = require('vision');
 const Inert = require('inert');
-
 const Auth = require('hapi-auth-jwt2');
 
 const app = new Hapi.Server({ port: 3000 });
@@ -26,11 +25,11 @@ async function Api() {
     };
 
     await app.register([
-        HapiAuthJwt2,
+        Auth,
         Vision,
         Inert,
         {
-            plugin: HapiSwagger,
+            plugin: Swagger,
             options: swaggerOptions
         }
     ]);
@@ -42,15 +41,6 @@ async function Api() {
             tags: ['api'],
             description: 'Lista as ferramentas do banco',
             notes: 'É possível pegar todas ferramentas do banco e filtrar por algum critério',
-            validate: {
-                failAction,
-                headers,
-                query: {
-                    skip: Joi.number().integer().default(0),
-                    limit: Joi.number().integer().default(10),
-                    nome: Joi.string().min(3).max(100)
-                },
-            }
         },
         handler: (request, response) => {
             try {
