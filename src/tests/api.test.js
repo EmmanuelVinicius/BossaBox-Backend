@@ -2,7 +2,7 @@ const assert = require('assert');
 const api = require('../api');
 
 
-const MOCK_QUERY = 'title=Notion';
+const MOCK_QUERY = 'tags=calendar';
 let MOCK_ID = '';
 const MOCK_ITEM_DEFAULT = {
     "title": "Notion",
@@ -43,8 +43,8 @@ describe('Test suit of all tools', function () {
             url: `/tools?${MOCK_QUERY}`
         });
 
-        const [{ title }] = JSON.parse(result.payload);
-        assert.deepStrictEqual(title, MOCK_ITEM_DEFAULT.title);
+        const [{ tags }] = JSON.parse(result.payload);
+        assert.deepStrictEqual(tags, MOCK_ITEM_DEFAULT.tags);
     });
     it('Get tool by Id', async () => {
         const result = await app.inject({

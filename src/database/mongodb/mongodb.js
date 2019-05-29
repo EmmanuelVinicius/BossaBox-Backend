@@ -33,7 +33,6 @@ class MongoDb {
     read(query) {
         const result = query.id ? this._schema.findById(query.id) :
             this._schema.find(query);
-
         return result;
     }
     update(_id, item) {

@@ -113,8 +113,8 @@ async function Api() {
                 const { id } = request.params
 
                 const result = await context.delete(id);
-                if(result.statusCode !== 200) return {};
-                
+                if (result.statusCode !== 200) return {};
+
                 return result.statusCode;
             } catch (error) {
                 console.error('DEU RUIM', error);
