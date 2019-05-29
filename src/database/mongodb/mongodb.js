@@ -6,7 +6,7 @@ class MongoDb {
         this._schema = schema;
     }
     static connect() {
-        Mongoose.connect('mongodb+srv://emmanuel:emmanuel@pessoas-e2ext.mongodb.net/test?retryWrites=true',
+        Mongoose.connect('mongodb+srv://emmanuel:emmanuel@pessoas-e2ext.mongodb.net/Tools?retryWrites=true',
             { useNewUrlParser: true }, function (error) {
                 if (!error) return;
                 console.log("Erro de conexão com o banco", error);

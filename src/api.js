@@ -1,4 +1,6 @@
 const Hapi = require('hapi');
+const MongoDb = require('./database/mongodb/mongodb');
+const ToolsSchema = require('./database/mongodb/schemas/toolsSchema');
 
 const Swagger = require('hapi-swagger');
 const Vision = require('vision');
@@ -7,14 +9,9 @@ const Auth = require('hapi-auth-jwt2');
 
 const app = new Hapi.Server({ port: 3000 });
 
-const MOCK_ITEMS = [
-    { id: 1, title: 'primeiro', tag: 'node' },
-    { id: 2, title: 'segundo', tag: 'mocha' },
-    { id: 3, title: 'terceiro', tag: 'node' },
-    { id: 4, title: 'quarto', tag: 'mocha' }
-];
-
 async function Api() {
+    const connection = MongoDb.connect();
+    const context = new MongoDb(connection, ToolsSchema);
 
     const swaggerOptions = {
         info: {
@@ -42,10 +39,12 @@ async function Api() {
             description: 'Lista as ferramentas do banco',
             notes: 'É possível pegar todas ferramentas do banco e filtrar por algum critério',
         },
-        handler: (request, response) => {
+        handler: async (request, response) => {
             try {
-                const consulta = request.query.tag ? MOCK_ITEMS.filter(result => result.tag == request.query.tag) : MOCK_ITEMS;
-                return consulta;
+                const stringData = JSON.stringify(request.query);
+                const data = JSON.parse(stringData);
+
+                return await context.read(data);
             } catch (error) {
                 console.error('DEU RUIM', error)
                 return;
@@ -55,10 +54,11 @@ async function Api() {
     app.route({
         method: 'GET',
         path: '/tools/{id}',
-        handler: (request, response) => {
+        handler: async (request, response) => {
             try {
-                const consulta = MOCK_ITEMS.filter(result => result.id == request.params.id);
-                return consulta;
+                const id = request.params
+
+                return await context.read(id);
             } catch (error) {
                 console.error('DEU RUIM', error);
                 return;
@@ -68,12 +68,15 @@ async function Api() {
     app.route({
         method: 'POST',
         path: '/tools',
-        handler: (request, response) => {
+        handler: async (request, response) => {
             try {
-                let insertion = [];
                 const data = request.payload;
-                insertion.push(data);
-                return insertion;
+                const result = await context.create(data);
+
+                return {
+                    message: 'Done!',
+                    _id: result._id
+                };
 
             } catch (error) {
                 console.error('DEU RUIM', error);
@@ -84,14 +87,17 @@ async function Api() {
     app.route({
         method: 'PATCH',
         path: '/tools/{id}',
-        handler: (request, response) => {
+        handler: async (request, response) => {
             try {
-                const [consulta] = MOCK_ITEMS.filter(result => result.id == request.params.id);
-                for (let key in request.payload)
-                    consulta[key] = request.payload[key];
+                const { id } = request.params;
 
-                return consulta.id;
+                const stringData = JSON.stringify(request.payload);
+                const data = JSON.parse(stringData);
 
+                const result = await context.update(id, data);
+                if (result.statusCode !== 200) return {};
+
+                return result.statusCode;
             } catch (error) {
                 console.error('DEU RUIM', error);
                 return;
@@ -102,13 +108,14 @@ async function Api() {
     app.route({
         method: 'DELETE',
         path: '/tools/{id}',
-        handler: (request, response) => {
+        handler: async (request, response) => {
             try {
-                const consulta = (result) => result.id == request.params.id;
-                const index = MOCK_ITEMS.findIndex(consulta);
-                MOCK_ITEMS.splice(index, 1);
+                const { id } = request.params
 
-                return JSON.stringify(MOCK_ITEMS.indexOf(consulta));
+                const result = await context.delete(id);
+                if(result.statusCode !== 200) return {};
+                
+                return result.statusCode;
             } catch (error) {
                 console.error('DEU RUIM', error);
 

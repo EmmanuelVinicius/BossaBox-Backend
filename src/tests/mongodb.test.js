@@ -25,6 +25,9 @@ describe('MongoDb test suit', function () {
 
         baseTool = await context.create(MOCK_DEFAULT_ITEM);
     });
+    this.afterAll(async () => {
+        await context.delete(baseTool._id);
+    });
 
     it('Verify the mongo connection', async () => {
         const result = await context.isConected();

@@ -2,12 +2,32 @@ const assert = require('assert');
 const api = require('../api');
 
 
-const MOCK_QUERY = 'tag=node';
-const MOCK_ITEM_DEFAULT = { id: 1, title: 'primeiro', tag: 'node' };
+const MOCK_QUERY = 'title=Notion';
+let MOCK_ID = '';
+const MOCK_ITEM_DEFAULT = {
+    "title": "Notion",
+    "link": "https://notion.so",
+    "description": "All in one tool to organize teams and ideas. Write, plan, collaborate, and get organized. ",
+    "tags": [
+        "organization",
+        "planning",
+        "collaboration",
+        "writing",
+        "calendar"
+    ]
+};
 
 describe('Test suit of all tools', function () {
-    this.beforeAll(async () =>{
+    this.timeout(Infinity)
+    this.beforeAll(async () => {
         app = await api;
+        const result = await app.inject({
+            method: 'POST',
+            url: '/tools',
+            payload: JSON.stringify(MOCK_ITEM_DEFAULT)
+        });
+        const { _id } = JSON.parse(result.payload);
+        MOCK_ID = _id;
     })
     it('Get all tools', async () => {
         const result = await app.inject({
@@ -15,7 +35,6 @@ describe('Test suit of all tools', function () {
             url: '/tools'
         });
         const data = JSON.parse(result.payload);
-
         assert.ok(Array.isArray(data));
     });
     it('Get tools with query', async () => {
@@ -24,17 +43,17 @@ describe('Test suit of all tools', function () {
             url: `/tools?${MOCK_QUERY}`
         });
 
-        const [{ tag }] = JSON.parse(result.payload);
-        assert.deepStrictEqual(tag, MOCK_ITEM_DEFAULT.tag);
+        const [{ title }] = JSON.parse(result.payload);
+        assert.deepStrictEqual(title, MOCK_ITEM_DEFAULT.title);
     });
     it('Get tool by Id', async () => {
         const result = await app.inject({
             method: 'GET',
-            url: `/tools/${MOCK_ITEM_DEFAULT.id}`
+            url: `/tools/${MOCK_ID}`
         });
 
-        const [{ id }] = JSON.parse(result.payload);
-        assert.deepStrictEqual(id, MOCK_ITEM_DEFAULT.id);
+        const { _id } = JSON.parse(result.payload);
+        assert.deepStrictEqual(_id, MOCK_ID);
     });
     it('Create a tool', async () => {
         const result = await app.inject({
@@ -43,27 +62,28 @@ describe('Test suit of all tools', function () {
             payload: MOCK_ITEM_DEFAULT
         });
 
-        const [{id}] = JSON.parse(result.payload);
-        assert.deepStrictEqual(id, MOCK_ITEM_DEFAULT.id);
+        const { message } = JSON.parse(result.payload);
+
+        assert.ok(message === 'Done!');
     });
     it('Update a tool', async () => {
-        const newItem = { title: 'novoPrimeiro' }
+        const newItem = { title: `newItem - ${Date.now()}` }
         const result = await app.inject({
             method: 'PATCH',
-            url: `/tools/${MOCK_ITEM_DEFAULT.id}`,
-            payload: JSON.stringify(newItem)
+            url: `/tools/${MOCK_ID}`,
+            payload: newItem
         });
 
-        const dados = JSON.parse(result.payload);
-        assert.deepStrictEqual(dados, MOCK_ITEM_DEFAULT.id);
+        const statusCode = result.statusCode;
+        assert.ok(statusCode === 200);
     });
     it('Delete tool', async () => {
         const result = await app.inject({
             method: 'DELETE',
-            url: `/tools/${MOCK_ITEM_DEFAULT.id}`
+            url: `/tools/${MOCK_ID}`
         });
 
-        const dados = JSON.parse(result.payload);
-        assert.ok(dados === -1);
+        const statusCode = result.statusCode;
+        assert.ok(statusCode === 200);
     });
 })
