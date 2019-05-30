@@ -54,4 +54,9 @@ describe('MongoDb test suit', function () {
 
         assert.deepStrictEqual(result.n, 1);
     });
+    it('Clear all tools', async () => {
+        const result = await context.delete();
+        
+        assert.ok(result.ok === 1)
+    });
 })

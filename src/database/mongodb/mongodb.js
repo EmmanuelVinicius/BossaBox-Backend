@@ -39,7 +39,9 @@ class MongoDb {
         return this._schema.updateOne({ _id }, { $set: item });
     }
     delete(_id) {
-        return this._schema.deleteOne({ _id });
+        const result = _id ? this._schema.deleteOne({ _id }) :
+            this._schema.deleteMany();
+        return result;
     }
 }
 

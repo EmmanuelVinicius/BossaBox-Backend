@@ -86,4 +86,13 @@ describe('Test suit of all tools', function () {
         const statusCode = result.statusCode;
         assert.ok(statusCode === 200);
     });
+    it('Delete all tools', async () => {
+        const result = await app.inject({
+            method: 'DELETE',
+            url: '/tools'
+        });
+        
+        const statusCode = result.statusCode;
+        assert.ok(statusCode === 200);
+    });
 })
