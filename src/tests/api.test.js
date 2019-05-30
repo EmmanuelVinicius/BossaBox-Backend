@@ -83,15 +83,15 @@ describe('Test suit of all tools', function () {
             url: `/tools/${MOCK_ID}`
         });
 
-        const statusCode = result.statusCode;
-        assert.ok(statusCode === 200);
+        const { ok } = JSON.parse(result.payload)
+        assert.ok(ok === 1);
     });
     it('Delete all tools', async () => {
         const result = await app.inject({
             method: 'DELETE',
-            url: '/tools'
+            url: `/tools`
         });
-        
+
         const statusCode = result.statusCode;
         assert.ok(statusCode === 200);
     });
