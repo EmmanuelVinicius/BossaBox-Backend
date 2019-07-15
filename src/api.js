@@ -7,7 +7,7 @@ const Swagger = require('hapi-swagger');
 const Vision = require('vision');
 const Inert = require('inert');
 
-const app = new Hapi.Server({ port: 3000 });
+const app = new Hapi.Server({ port: 3001 });
 
 mapRoutes = (instance, methods) => {
     return methods.map(method => instance[method]())
