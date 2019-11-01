@@ -20,7 +20,7 @@
     "lodash": "^4.17.14",
     "mocha": "^6.1.4",
     "mongoose": "^5.5.11",
-    "sequelize": "^5.8.6",
+    "sequelize": "^5.15.1",
     "vision": "^5.4.4"
   }
 }
